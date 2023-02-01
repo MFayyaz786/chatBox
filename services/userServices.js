@@ -8,5 +8,9 @@ const userServices = {
     const result = await user.save();
     return result;
   },
+  get: async () => {
+    const users = await userModel.find();
+    return users;
+  },
 };
 module.exports = userServices;
