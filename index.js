@@ -9,6 +9,8 @@ const userRouter = require("./routes/userRouter");
 const swaggerDocs = require("./utils/swagger");
 
 const { addAnId } = require("./utils/userSocketId");
+const { default: axios } = require("axios");
+const { promise } = require("zod");
 const server = http.createServer(app);
 const io = socketio(server);
 app.set("socket", io);
@@ -32,20 +34,20 @@ app.use((req, res, next) => {
  *          description: Successful response
  */
 
-app.get("/abc", (req, res) => {
+app.get("/", (req, res) => {
   res.send({ msg: "Welcome to chatbox" });
 });
-io.on("connection", (socket) => {
-  console.log("connnection on");
-  addAnId(345, socket.id, "fiaz");
-  socket.on("data", (data) => {
-    console.log(data);
-  });
-  console.log(socket.id);
-  socket.on("disconnect", () => {
-    console.log("disconnected");
-  });
-});
+// io.on("connection", (socket) => {
+//   console.log("connnection on");
+//   addAnId(345, socket.id, "fiaz");
+//   socket.on("data", (data) => {
+//     console.log(data);
+//   });
+//   console.log(socket.id);
+//   socket.on("disconnect", () => {
+//     console.log("disconnected");
+//   });
+// });
 const port = process.env.PORT;
 swaggerDocs(app, port);
 /**
