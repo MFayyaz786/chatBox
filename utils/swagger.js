@@ -5,9 +5,9 @@ const dotenv = require("dotenv");
 const userSchema = require("../schema/userSchema");
 const http = require("http");
 const https = require("https");
-
 dotenv.config();
 const port = process.env.PORT;
+LOCAL = process.env.LOCAL;
 const options = {
   definition: {
     openapi: "3.0.0",
@@ -16,45 +16,13 @@ const options = {
       title: "ChatBox APIs Document",
       description: "Local server chatBox",
     },
-    // schemes: [http, https],
     servers: [
       {
-        url: `http://localhost:${port}`,
-      },
-    ],
-    components: {
-      securitySchemas: {
-        bearerAuth: {
-          type: "http",
-          scheme: "bearer",
-          bearerFormat: "JWT",
-        },
-      },
-    },
-    security: [
-      {
-        bearerAuth: [],
+        url: `http://localhost:${process.env.PORT}`,
       },
     ],
   },
-  apis: [
-    "../index.js",
-    /**
-     * @openapi
-     * components:
-     *   schema:
-     *     User:
-     *       type: object
-     *       required:
-     *        - email
-     *        - contact
-     *       properties:
-     *         email:
-     *           type: string
-     *         contact:
-     *           type: string
-     */
-  ],
+  apis: ["./swaggerRoutes/*.js", "./schema/*.js"],
 };
 const swaggerSpec = swaggerjsdoc(options);
 function swaggerDocs(app, port) {

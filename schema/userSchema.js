@@ -1,19 +1,34 @@
 const { object, number, string } = require("zod");
 
 /**
- * @openapi
+ * @swagger
  * components:
- *   schema:
- *     User:
+ *   schemas:
+ *     CreateUserInput:
  *       type: object
  *       required:
  *        - email
  *        - contact
  *       properties:
  *         email:
- *           type: string
+ *           type: string,
+ *           default: ali@gmail.com
  *         contact:
- *           type: string
+ *           type: string,
+ *           default: 03038998789
+ *     CreateUserResponse:
+ *      type: object
+ *      properties:
+ *        email:
+ *          type: string
+ *        contact:
+ *          type: string
+ *        _id:
+ *          type: string
+ *        createdAt:
+ *          type: string
+ *        updatedAt:
+ *          type: string
  */
 // components: schemas: User: type: object;
 // properties: email: type: string;

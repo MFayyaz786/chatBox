@@ -4,46 +4,66 @@ const app = express();
 const expressAyncHandler = require("express-async-handler");
 const userRouter = express.Router();
 const userServices = require("../services/userServices");
-const { addAnId } = require("../utils/userSocketId");
+const { addAnId, getUserSocket } = require("../utils/userSocketId");
 const cheerio = require("cheerio");
 const bookModel = require("../model/bookModel");
+//const io = require("socket.io-client");
+//let socket = io("http://localhost:5500");
 userRouter.post(
-  "/",
+  "/post",
   expressAyncHandler(async (req, res) => {
     let { email, contact } = req.body;
     const user = await userServices.addUser(email, contact);
     if (user) {
-      try {
-        const io = app.get.get("socket");
-        console.log(io);
-      } catch (error) {}
+      console.log(user);
       res.status(200).send({ msg: " user", data: user });
     } else {
       res.status(400).send({ msg: "user not added" });
     }
   })
 );
-/**
- * @swagger
- * path:
- *  /example:
- *    get:
- *      summary: Example endpoint
- *      responses:
- *        200:
- *          description: Successful response
- */
-app.get("/example", (req, res) => {
-  res.send("Hello, Swagger!");
-});
-
 userRouter.get(
-  "/",
+  "/all",
   expressAyncHandler(async (req, res) => {
     const result = await userServices.get();
-    res.status(200).send({ data: result });
+    if (result.length != 0) {
+      const io = req.app.get("socket");
+
+      io.emit("message", result, (error) => {
+        if (error) {
+          console.error("Error emitting message: ", error);
+        } else {
+          console.log("Message emitted successfully", result);
+        }
+      });
+      res.status(200).send({ msg: "Users", data: result });
+    } else {
+      res.status(404).send({ msg: "Not Found", data: result });
+    }
   })
 );
+
+userRouter.get(
+  "/getById?",
+  expressAyncHandler(async (req, res) => {
+    const { userId } = req.query;
+    const result = await userServices.getById(userId);
+    if (result) {
+      res.status(200).send({ msg: "Users", data: result });
+    } else {
+      res.status(404).send({ msg: "Not Found", data: result });
+    }
+  })
+);
+
+userRouter.get("/listen", (req, res) => {
+  const io = req.app.get("socket");
+  io.on("message", (data) => {
+    console.log(data);
+  });
+  res.status(200).send({ message: "Listening for messages" });
+});
+
 userRouter.get(
   "/scrap",
   expressAyncHandler(async (req, res) => {
